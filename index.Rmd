@@ -65,11 +65,10 @@ NOTA: recuerde que también puede explorar los datos con funciones como ```str()
 ### Ejercicio 2 (5%)
 Mediante la función [kable()](https://www.rdocumentation.org/packages/knitr/versions/1.30/topics/kable) del paquete [knitr](https://cran.r-project.org/web/packages/knitr/), despliegue en una tabla las diez primeras observaciones (i.e. filas, registros) y las cinco primeras variables (i.e. columnas) del data frame  ```world```.
 ```{r}
-kable(
-  world[1:10, 1:5, drop = TRUE], 
-  caption="Datos demográficos de los países del mundo"
-)
+recorte= world[1:10,1:5]
+kable(recorte,caption = "Datos demograficos de los paises del mundo ")
 ```
+
 Note el uso del parámetro ```drop=TRUE```, para evitar el despliegue de la tabla de geometrías.
 
 ### Ejercicio 3 (5%)
@@ -77,8 +76,8 @@ Mediante la función ```kable()```, despliegue en una tabla las diez primeras ob
 ```{r}
 kable(
   world[1:10, c("name_long","continent","pop","lifeExp","gdpPercap"), drop = TRUE], 
-  col.names=c("País","Continente","Población","Esperanza de vida","Renta per cápita"),  
-  caption="Datos demográficos de los países del mundo"
+  col.names=c("País","Continente","Poblacion","Esperanza de vida","Renta per capita"),  
+  caption="Datos demograficos de los paises del mundo"
 )
 ```
 
@@ -128,19 +127,59 @@ kable_styling()
 ### Ejercicio 6 (15%)
 Con la función ```ggplot()``` del paquete [ggplot2](https://ggplot2.tidyverse.org/), genere un gráfico de barras que muestre la esperanza de vida de los países del continente asiático en los que esa esperanza de vida sea de al menos 80 años. El gráfico debe tener un título, los nombres (o códigos) de los países bajo cada barra, los valores sobre las barras y etiquetas para los ejes x e y.
 ```{r}
+
+asiaraw=world[world$continent == "Asia"&world$lifeExp >= 80.00, ]
+#elimiar espacios en blanco 
+asia=na.omit(asiaraw)
+
+
+ggplot(data=asia, aes(x=name_long, y=lifeExp)) + 
+  geom_bar(stat = "identity")+
+xlab("Países")+
+  ylab("Esparanza de vida")+
+  geom_text(aes(label=format(round(lifeExp,4))))+
+  
+  ggtitle("Esperanza de vida al nacer")
+
+  
+
+
+
+
 ```
 
 ### Ejercicio 7 (20%)
 Con la función ```plot()``` del paquete [sf](https://cran.r-project.org/web/packages/sf/index.html), genere un [mapa de coropletas](https://en.wikipedia.org/wiki/Choropleth_map) con colores que reflejen la esperanza de vida de los países del continente llamado Oceanía. El mapa debe llevar un título.
 ```{r}
+world
+oceania= world[world$continent == "Oceania",]
+plot(oceania["lifeExp"], key.pos = 4,main = "Esperanza de vida Oceanía")
+
+
 ```
 
 ### Ejercicio 8 (20%)
 Extraiga en un nuevo data frame los países de Centroamérica con esperanza de vida mayor o igual a 74 años y genere el mapa de coropletas, con su título correspondiente.
 ```{r}
+world
+ExpCentroamerica=world[world$subregion == "Central America"&world$lifeExp>=74 ,]
+plot(ExpCentroamerica["lifeExp"], key.pos = 4,main = "Esperanza de vida America Central")
 ```
 
 ### Ejercicio 9 (20%)
 Extraiga en un nuevo data frame los países de América del Sur con área de al menos 2.5 millones de km2 o población de al menos 40 millones de personas y genere un mapa de coropletas para cada variable (i.e. área y población), con sus títulos correspondientes.
 ```{r}
+
+
+ExpSA=world[world$subregion == "South America",]
+ExpSAfiltrado=ExpSA[ExpSA$area_km2 == 2500000|ExpSA$pop>=40000000 ,]
+plot(ExpSAfiltrado["pop"], key.pos = 4,main = "Países sur américa población ")
+plot(ExpSAfiltrado["area_km2"], key.pos = 4,main = "Países sur américa área km2")
+
+
+
+
+
+
+
 ```
